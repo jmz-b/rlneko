@@ -1,28 +1,27 @@
 #include "raylib.h"
-#include "game.h"
 #include "player.h"
 
 static const Vector2 sequenceToVelocityMap[PLAYER_NUM_SEQUENCES] = {
-    { 0.0f, 0.0f }, // AWAKE
-    { 0.0f, 1.0f }, // DOWN
-    { 0.0f, 0.0f }, // DTOGI
-    { -1.0f, 1.0f }, // DWLEFT
-    { 1.0f, 1.0f }, // DWRIGHT
-    { 0.0f, 0.0f }, // JARE
-    { 0.0f, 0.0f }, // KAKI
-    { -1.0f, 0.0f }, // LEFT
-    { 0.0f, 0.0f }, // LTOGI
-    { 0.0f, 0.0f }, // MATI
-    { 1.0f, 0.0f }, // RIGHT
-    { 0.0f, 0.0f }, // RTOGI
-    { 0.0f, 0.0f }, // SLEEPY
-    { 0.0f, -1.0f }, // UP
-    { -1.0f, -1.0f }, // UPLEFT
-    { 1.0f, -1.0f }, // UPRIGHT
-    { 0.0f, 0.0f }, // UPTOGI
+    { 0.0f, 0.0f },  // AWAKE
+    { 0.0f, 1.0f },  // DOWN
+    { 0.0f, 0.0f },  // DTOGI
+    { -1.0f, 1.0f },  // DWLEFT
+    { 1.0f, 1.0f },  // DWRIGHT
+    { 0.0f, 0.0f },  // JARE
+    { 0.0f, 0.0f },  // KAKI
+    { -1.0f, 0.0f },  // LEFT
+    { 0.0f, 0.0f },  // LTOGI
+    { 0.0f, 0.0f },  // MATI
+    { 1.0f, 0.0f },  // RIGHT
+    { 0.0f, 0.0f },  // RTOGI
+    { 0.0f, 0.0f },  // SLEEPY
+    { 0.0f, -1.0f },  // UP
+    { -1.0f, -1.0f },  // UPLEFT
+    { 1.0f, -1.0f },  // UPRIGHT
+    { 0.0f, 0.0f },  // UPTOGI
 };
 
-Player LoadPlayer(const char *path) {
+Player LoadPlayer(const char *path, int gameWidth, int gameHeight) {
     Texture2D texture = LoadTexture(path);
 
     Rectangle frameRec = { 
@@ -32,8 +31,8 @@ Player LoadPlayer(const char *path) {
     };
 
     Vector2 position = {
-        (float)(GAME_WIDTH/2 - frameRec.width/2),
-        (float)(GAME_HEIGHT/2 - frameRec.height/2),
+        (float)(gameWidth/2 - frameRec.width/2),
+        (float)(gameHeight/2 - frameRec.height/2),
     };
 
     Vector2 velocity = { 0.0f, 0.0f };
@@ -87,8 +86,8 @@ PlayerSequence GetNextPlayerSequence(Player *player) {
     }
 }
 
-void AnimatePlayer(Player *player) {
-    if (player->framesCounter >= GAME_FPS/player->FPS) {
+void AnimatePlayer(Player *player, int gameFPS) {
+    if (player->framesCounter >= gameFPS/player->FPS) {
         player->framesCounter = 0;
         player->currentFrame++;
 
@@ -99,7 +98,7 @@ void AnimatePlayer(Player *player) {
     };
 }
 
-void UpdatePlayer(Player *player) {
+void UpdatePlayer(Player *player, int gameFPS) {
     player->framesCounter++;
     player->currentSequence = GetNextPlayerSequence(player);
 
@@ -107,7 +106,7 @@ void UpdatePlayer(Player *player) {
     player->position.x += player->velocity.x;
     player->position.y += player->velocity.y;
 
-    AnimatePlayer(player);
+    AnimatePlayer(player, gameFPS);
 };
 
 void DrawPlayer(Player *player) {

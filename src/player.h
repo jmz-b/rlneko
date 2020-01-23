@@ -23,10 +23,10 @@ typedef struct Player {
     int currentSequence;
 } Player;
 
-Player LoadPlayer(const char *path);
+Player LoadPlayer(const char *path, int gameWidth, int gameHeight);
 PlayerSequence GetNextPlayerSequence(Player *player);
-void AnimatePlayer(Player *player);
-void UpdatePlayer(Player *player);
+void AnimatePlayer(Player *player, int gameFPS);
+void UpdatePlayer(Player *player, int gameFPS);
 void DrawPlayer(Player *player);
 void UnloadPlayer(Player *player);
 
