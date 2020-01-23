@@ -33,7 +33,7 @@ void DrawGame(Game *game) {
 
     // draw to RenderTexture2D
     BeginTextureMode(game->target);
-        ClearBackground(RAYWHITE);
+        ClearBackground(LIGHTGRAY);
         DrawPlayer(&game->player);
     EndTextureMode();
 
