@@ -1,3 +1,4 @@
+#include "stdlib.h"
 #include "raylib.h"
 #include "player.h"
 
@@ -21,29 +22,33 @@ static const Vector2 sequenceToVelocityMap[PLAYER_NUM_SEQUENCES] = {
     { 0.0f, 0.0f },  // UPTOGI
 };
 
-Player LoadPlayer(const char *path, int gameWidth, int gameHeight) {
-    Texture2D texture = LoadTexture(path);
+Player LoadPlayer(PlayerConfig config) {
+    // we can only support the number of sequences that we have mappings for
+    size_t numSequences = sizeof(sequenceToVelocityMap)/sizeof(sequenceToVelocityMap[0]);
+
+    Texture2D texture = LoadTexture(config.texturePath);
 
     Rectangle frameRec = { 
         0.0f, 0.0f,
-        (float)(texture.width / PLAYER_NUM_FRAMES),
-        (float)(texture.height / PLAYER_NUM_SEQUENCES),
+        (float)(texture.width / config.numFrames),
+        (float)(texture.height / numSequences),
     };
 
+    // drop player in the center of the area defined by config.dropBox
     Vector2 position = {
-        (float)(gameWidth/2 - frameRec.width/2),
-        (float)(gameHeight/2 - frameRec.height/2),
+        (float)((config.dropBox.x + config.dropBox.width)/2 - frameRec.width/2),
+        (float)((config.dropBox.y + config.dropBox.height)/2 - frameRec.height/2),
     };
 
     Vector2 velocity = { 0.0f, 0.0f };
-    int FPS = 6;
 
     int framesCounter = 0;
     int currentFrame = 0;
     int currentSequence = AWAKE;
 
     return (Player) {
-        texture, frameRec, position, velocity, FPS,
+        config, texture, frameRec,
+        position, velocity,
         framesCounter, currentFrame, currentSequence,
     };
 };
@@ -86,27 +91,22 @@ PlayerSequence GetNextPlayerSequence(Player *player) {
     }
 }
 
-void AnimatePlayer(Player *player, int gameFPS) {
-    if (player->framesCounter >= gameFPS/player->FPS) {
-        player->framesCounter = 0;
-        player->currentFrame++;
+void AnimatePlayer(Player *player) {
+    player->currentFrame++;
 
-        if (player->currentFrame > PLAYER_NUM_FRAMES - 1) player->currentFrame = 0;
+    if (player->currentFrame > player->config.numFrames - 1) player->currentFrame = 0;
 
-        player->frameRec.x = (float)(player->currentFrame * player->frameRec.width);
-        player->frameRec.y = (float)(player->currentSequence * player->frameRec.height);
-    };
+    player->frameRec.x = (float)(player->currentFrame * player->frameRec.width);
+    player->frameRec.y = (float)(player->currentSequence * player->frameRec.height);
 }
 
-void UpdatePlayer(Player *player, int gameFPS) {
+void UpdatePlayer(Player *player) {
     player->framesCounter++;
     player->currentSequence = GetNextPlayerSequence(player);
 
     player->velocity = sequenceToVelocityMap[player->currentSequence];
     player->position.x += player->velocity.x;
     player->position.y += player->velocity.y;
-
-    AnimatePlayer(player, gameFPS);
 };
 
 void DrawPlayer(Player *player) {

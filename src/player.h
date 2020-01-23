@@ -3,7 +3,6 @@
 
 #include "raylib.h"
 
-#define PLAYER_NUM_FRAMES 2
 #define PLAYER_NUM_SEQUENCES 17
 
 typedef enum {
@@ -11,22 +10,28 @@ typedef enum {
     RIGHT, RTOGI, SLEEP, UP, UPLEFT, UPRIGHT, UPTOGI
 } PlayerSequence;
 
-typedef struct Player {
+typedef struct {
+    const char *texturePath;
+    Rectangle dropBox;
+    int FPS;
+    int numFrames;
+} PlayerConfig;
+
+typedef struct {
+    PlayerConfig config;
     Texture2D texture;
     Rectangle frameRec;
     Vector2 position;
     Vector2 velocity;
-    int FPS;
-
     int framesCounter;
     int currentFrame;
     int currentSequence;
 } Player;
 
-Player LoadPlayer(const char *path, int gameWidth, int gameHeight);
+Player LoadPlayer(PlayerConfig config);
 PlayerSequence GetNextPlayerSequence(Player *player);
-void AnimatePlayer(Player *player, int gameFPS);
-void UpdatePlayer(Player *player, int gameFPS);
+void AnimatePlayer(Player *player);
+void UpdatePlayer(Player *player);
 void DrawPlayer(Player *player);
 void UnloadPlayer(Player *player);
 

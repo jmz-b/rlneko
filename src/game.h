@@ -4,21 +4,20 @@
 #include "raylib.h"
 #include "player.h"
 
-#define GAME_WIDTH 400
-#define GAME_HEIGHT 300
-#define GAME_FPS 60
-
 typedef struct {
-    RenderTexture2D target;
-    Player player;
-
     int width;
     int height;
     int FPS;
+} GameConfig;
+
+typedef struct {
+    GameConfig config;
+    RenderTexture2D target;
+    Player player;
     float scale;
 } Game;
 
-Game LoadGame(int width, int height, int FPS);
+Game LoadGame(GameConfig gameConfig, PlayerConfig playerConfig);
 void UpdateGame(Game *game);
 void DrawGame(Game *game);
 void UnloadGame(Game *game);
