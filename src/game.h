@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "raylib.h"
+#include <raylib.h>
 #include "player.h"
 
 typedef struct {
@@ -14,7 +14,6 @@ typedef struct {
     GameConfig config;
     RenderTexture2D target;
     Player player;
-    float scale;
 } Game;
 
 Game LoadGame(GameConfig gameConfig, PlayerConfig playerConfig);

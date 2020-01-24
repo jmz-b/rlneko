@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "raylib.h"
+#include <raylib.h>
 
 #define PLAYER_NUM_SEQUENCES 17
 
@@ -12,7 +12,7 @@ typedef enum {
 
 typedef struct {
     const char *texturePath;
-    Rectangle dropBox;
+    Rectangle dropRec;
     int FPS;
     int numFrames;
 } PlayerConfig;

@@ -1,6 +1,7 @@
-#include "stdlib.h"
-#include "raylib.h"
+#include <stdlib.h>
+#include <raylib.h>
 #include "player.h"
+#include "config.h"
 
 static const Vector2 sequenceToVelocityMap[PLAYER_NUM_SEQUENCES] = {
     { 0.0f, 0.0f },  // AWAKE
@@ -30,14 +31,14 @@ Player LoadPlayer(PlayerConfig config) {
 
     Rectangle frameRec = { 
         0.0f, 0.0f,
-        (float)(texture.width / config.numFrames),
-        (float)(texture.height / numSequences),
+        (float)texture.width / config.numFrames,
+        (float)texture.height / numSequences,
     };
 
-    // drop player in the center of the area defined by config.dropBox
+    // drop player in the center of the area defined by config.dropRec
     Vector2 position = {
-        (float)((config.dropBox.x + config.dropBox.width)/2 - frameRec.width/2),
-        (float)((config.dropBox.y + config.dropBox.height)/2 - frameRec.height/2),
+        (float)(config.dropRec.x + config.dropRec.width)/2 - (float)frameRec.width/2,
+        (float)(config.dropRec.y + config.dropRec.height)/2 - (float)frameRec.height/2,
     };
 
     Vector2 velocity = { 0.0f, 0.0f };
@@ -55,7 +56,7 @@ Player LoadPlayer(PlayerConfig config) {
 
 PlayerSequence GetNextPlayerSequence(Player *player) {
     if (IsKeyDown(KEY_Z)) {
-        return JARE;
+        return AWAKE;
     } else if (IsKeyDown(KEY_A)) {
         return KAKI;
     } else if (IsKeyDown(KEY_X)) {
@@ -87,7 +88,7 @@ PlayerSequence GetNextPlayerSequence(Player *player) {
     } else if (IsKeyDown(KEY_UP)) {
         return UP;
     } else {
-        return AWAKE;
+        return JARE;
     }
 }
 
@@ -96,8 +97,8 @@ void AnimatePlayer(Player *player) {
 
     if (player->currentFrame > player->config.numFrames - 1) player->currentFrame = 0;
 
-    player->frameRec.x = (float)(player->currentFrame * player->frameRec.width);
-    player->frameRec.y = (float)(player->currentSequence * player->frameRec.height);
+    player->frameRec.x = (float)player->currentFrame * (float)player->frameRec.width;
+    player->frameRec.y = (float)player->currentSequence * (float)player->frameRec.height;
 }
 
 void UpdatePlayer(Player *player) {
