@@ -10,7 +10,7 @@ StartScreen LoadStartScreen(StartScreenConfig config) {
 
     SetTextureFilter(target.texture, FILTER_POINT);  // texture scale filter to use
 
-    return (StartScreen) { config, target, characterSelectTexture, selectedCharacter, enter };
+    return (StartScreen){ config, target, characterSelectTexture, selectedCharacter, enter };
 }
 
 const char *GetCharacterTexturePath(StartScreen *start) {
@@ -27,8 +27,8 @@ const char *GetCharacterTexturePath(StartScreen *start) {
 
 void UpdateStartScreen(StartScreen *start) {
     if (IsKeyPressed(KEY_LEFT) && start->selectedCharacter > 0) start->selectedCharacter--;
-    if (IsKeyPressed(KEY_RIGHT) && start->selectedCharacter < start->config.numCharacters - 1) start->selectedCharacter++;
-    if (IsKeyPressed(KEY_ENTER)) start->enter = true;
+    else if (IsKeyPressed(KEY_RIGHT) && start->selectedCharacter < start->config.numCharacters - 1) start->selectedCharacter++;
+    else if (IsKeyPressed(KEY_ENTER)) start->enter = true;
 }
 
 void DrawStartScreen(StartScreen *start) {

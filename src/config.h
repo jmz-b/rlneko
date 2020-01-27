@@ -4,6 +4,10 @@
 
 #define STARTSCREEN_NUM_CHARACTERS 6
 
-#define PLAYER_DROP_BOX (Rectangle) { 0.0f, 0.0f, 400.0f, 300.0f }
+#define PLAYER_DROP_BOX (Rectangle){ 0.0f, 0.0f, 400.0f, 300.0f }
 #define PLAYER_FPS 6
 #define PLAYER_NUM_FRAMES 2
+
+#define CAMERA_MIN_SPEED 30
+#define CAMERA_MIN_EFFECT_LENGTH 10
+#define CAMERA_FRACTION_SPEED 1.0f

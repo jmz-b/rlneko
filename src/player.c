@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <raylib.h>
+#include <raymath.h>
 #include "player.h"
 #include "config.h"
 
@@ -47,7 +48,7 @@ Player LoadPlayer(PlayerConfig config) {
     int currentFrame = 0;
     int currentSequence = AWAKE;
 
-    return (Player) {
+    return (Player){
         config, texture, frameRec,
         position, velocity,
         framesCounter, currentFrame, currentSequence,
@@ -106,8 +107,7 @@ void UpdatePlayer(Player *player) {
     player->currentSequence = GetNextPlayerSequence(player);
 
     player->velocity = sequenceToVelocityMap[player->currentSequence];
-    player->position.x += player->velocity.x;
-    player->position.y += player->velocity.y;
+    player->position = Vector2Add(player->position, player->velocity);
 };
 
 void DrawPlayer(Player *player) {

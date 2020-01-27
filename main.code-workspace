@@ -12,7 +12,8 @@
 			"stdio.h": "c",
 			"*.m": "c",
 			"cstdlib": "cpp",
-			"startscreen.h": "c"
+			"startscreen.h": "c",
+			"player.h": "c"
 		}
 	}
 }

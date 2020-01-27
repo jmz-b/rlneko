@@ -3,6 +3,8 @@
 
 #include <raylib.h>
 #include "player.h"
+#include "camera.h"
+#include "terrain.h"
 
 typedef struct {
     int width;
@@ -14,9 +16,11 @@ typedef struct {
     GameConfig config;
     RenderTexture2D target;
     Player player;
+    SmoothFollowCamera camera;
+    Terrain terrain;
 } Game;
 
-Game LoadGame(GameConfig gameConfig, PlayerConfig playerConfig);
+Game LoadGame(GameConfig gameConfig, PlayerConfig playerConfig, SmoothFollowCameraConfig cameraConfig, TerrainConfig terrainConfig);
 void UpdateGame(Game *game);
 void DrawGame(Game *game);
 void UnloadGame(Game *game);
