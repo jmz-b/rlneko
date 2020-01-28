@@ -22,16 +22,19 @@ typedef struct {
     Texture2D texture;
     Rectangle frameRec;
     Vector2 position;
+    Rectangle bbox;
     Vector2 velocity;
+    int sleepTimer;
+    int clickTimer;
     int framesCounter;
     int currentFrame;
     int currentSequence;
 } Player;
 
 Player LoadPlayer(PlayerConfig config);
-PlayerSequence GetNextPlayerSequence(Player *player);
+PlayerSequence GetNextPlayerSequence(Player *player, Vector2 targetPosition);
 void AnimatePlayer(Player *player);
-void UpdatePlayer(Player *player);
+void UpdatePlayer(Player *player, Vector2 targetPosition);
 void DrawPlayer(Player *player);
 void UnloadPlayer(Player *player);
 

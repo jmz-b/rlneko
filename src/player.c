@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <math.h>
 #include <raylib.h>
 #include <raymath.h>
 #include "player.h"
@@ -21,7 +22,7 @@ static const Vector2 sequenceToVelocityMap[PLAYER_NUM_SEQUENCES] = {
     { 0.0f, -1.0f },  // UP
     { -1.0f, -1.0f },  // UPLEFT
     { 1.0f, -1.0f },  // UPRIGHT
-    { 0.0f, 0.0f },  // UPTOGI
+    { 0.0f, 0.0f }  // UPTOGI
 };
 
 Player LoadPlayer(PlayerConfig config) {
@@ -33,64 +34,56 @@ Player LoadPlayer(PlayerConfig config) {
     Rectangle frameRec = { 
         0.0f, 0.0f,
         (float)texture.width / config.numFrames,
-        (float)texture.height / numSequences,
+        (float)texture.height / numSequences
     };
 
     // drop player in the center of the area defined by config.dropRec
     Vector2 position = {
-        (float)(config.dropRec.x + config.dropRec.width)/2 - (float)frameRec.width/2,
-        (float)(config.dropRec.y + config.dropRec.height)/2 - (float)frameRec.height/2,
+        (float)(config.dropRec.x + config.dropRec.width)/2,
+        (float)(config.dropRec.y + config.dropRec.height)/2
+    };
+
+    Rectangle bbox = (Rectangle){
+        position.x - frameRec.width/2,
+        position.y - frameRec.height/2,
+        frameRec.width, frameRec.height
     };
 
     Vector2 velocity = { 0.0f, 0.0f };
-
+    int sleepTimer = 0;
+    int clickTimer = 0;
     int framesCounter = 0;
     int currentFrame = 0;
     int currentSequence = AWAKE;
 
     return (Player){
-        config, texture, frameRec,
-        position, velocity,
-        framesCounter, currentFrame, currentSequence,
+        config, texture, frameRec, position, bbox, velocity,
+        sleepTimer, clickTimer,
+        framesCounter, currentFrame, currentSequence
     };
 };
 
-PlayerSequence GetNextPlayerSequence(Player *player) {
-    if (IsKeyDown(KEY_Z)) {
-        return AWAKE;
-    } else if (IsKeyDown(KEY_A)) {
-        return KAKI;
-    } else if (IsKeyDown(KEY_X)) {
-        return MATI;
-    } else if (IsKeyDown(KEY_S)) {
-        return SLEEP;
-    } else if (IsKeyDown(KEY_DOWN) && IsKeyDown(KEY_SPACE)) {
-        return DTOGI;
-    } else if (IsKeyDown(KEY_LEFT) && IsKeyDown(KEY_SPACE)) {
-        return LTOGI;
-    } else if (IsKeyDown(KEY_RIGHT) && IsKeyDown(KEY_SPACE)) {
-        return RTOGI;
-    } else if (IsKeyDown(KEY_UP) && IsKeyDown(KEY_SPACE)) {
-        return UPTOGI;
-    } else if (IsKeyDown(KEY_DOWN) && IsKeyDown(KEY_LEFT)) {
-        return DWLEFT;
-    } else if (IsKeyDown(KEY_DOWN) && IsKeyDown(KEY_RIGHT)) {
-        return DWRIGHT;
-    } else if (IsKeyDown(KEY_UP) && IsKeyDown(KEY_LEFT)) {
-        return UPLEFT;
-    } else if (IsKeyDown(KEY_UP) && IsKeyDown(KEY_RIGHT)) {
-        return UPRIGHT;
-    } else if (IsKeyDown(KEY_DOWN)) {
-        return DOWN;
-    } else if (IsKeyDown(KEY_LEFT)) {
-        return LEFT;
-    } else if (IsKeyDown(KEY_RIGHT)) {
-        return RIGHT;
-    } else if (IsKeyDown(KEY_UP)) {
-        return UP;
-    } else {
-        return JARE;
-    }
+PlayerSequence GetNextPlayerSequence(Player *player, Vector2 targetPosition) {
+    // normalized displacement from click
+    Vector2 targetDisplacement = Vector2Normalize(Vector2Subtract(targetPosition, player->position));
+    float rotation = atan2f(targetDisplacement.x, targetDisplacement.y);
+
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(targetPosition, player->bbox)) return KAKI;
+
+    if (rotation == 0.0f) return DOWN;
+    else if (rotation == PI/2.0f) return RIGHT;
+    else if (rotation == -PI/2.0f) return LEFT;
+    else if (rotation == PI) return UP;
+    else if (rotation > 0.0f && rotation < PI/2.0f) return DWRIGHT;
+    else if (rotation < 0.0f && rotation > -PI/2.0f) return DWLEFT;
+    else if (rotation > PI/2.0f && rotation < PI) return UPRIGHT;
+    else if (rotation < -PI/2.0f && rotation > -PI) return UPLEFT;
+
+    if (player->sleepTimer > 60 * 10)  return SLEEP;
+    else if (player->sleepTimer > 60 * 6) return MATI;
+    else if (player->sleepTimer > 60 * 2) return JARE;
+
+    return AWAKE;
 }
 
 void AnimatePlayer(Player *player) {
@@ -102,16 +95,28 @@ void AnimatePlayer(Player *player) {
     player->frameRec.y = (float)player->currentSequence * (float)player->frameRec.height;
 }
 
-void UpdatePlayer(Player *player) {
+void UpdatePlayer(Player *player, Vector2 targetPosition) {
+    player->sleepTimer++;
     player->framesCounter++;
-    player->currentSequence = GetNextPlayerSequence(player);
 
+    player->currentSequence = GetNextPlayerSequence(player, targetPosition);
     player->velocity = sequenceToVelocityMap[player->currentSequence];
-    player->position = Vector2Add(player->position, player->velocity);
+
+    if (player->velocity.x != 0.0f || player->velocity.y != 0.0f) {
+        player->sleepTimer = 0.0f;
+        player->position = Vector2Add(player->position, player->velocity);
+        player->bbox.x = player->position.x - player->frameRec.width/2;
+        player->bbox.y = player->position.y - player->frameRec.height/2;
+    }
 };
 
 void DrawPlayer(Player *player) {
-    DrawTextureRec(player->texture, player->frameRec, player->position, WHITE);
+    DrawTextureRec(
+        player->texture,
+        player->frameRec,
+        Vector2Subtract(player->position, (Vector2){ player->frameRec.width/2, player->frameRec.height/2 }),
+        WHITE
+    );
 }
 
 void UnloadPlayer(Player *player) {

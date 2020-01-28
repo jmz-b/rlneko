@@ -18,6 +18,7 @@ typedef struct {
     Player player;
     SmoothFollowCamera camera;
     Terrain terrain;
+    Vector2 clickPosition;
 } Game;
 
 Game LoadGame(GameConfig gameConfig, PlayerConfig playerConfig, SmoothFollowCameraConfig cameraConfig, TerrainConfig terrainConfig);

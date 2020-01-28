@@ -14,7 +14,9 @@ int main(void) {
     Game game;
     PlayerConfig playerConfig;
     RenderTexture2D *target;
-    float scale;
+    float scaleX;
+    float scaleY;
+    float drawScale;
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
     InitWindow(GAME_WIDTH, GAME_HEIGHT, "rlneko");
@@ -46,7 +48,10 @@ int main(void) {
         }
 
         target = screenToTargetMap[currentScreen];
-        scale = min((float)GetScreenWidth()/target->texture.width, (float)GetScreenHeight()/target->texture.height);
+        scaleX = (float)GetScreenWidth()/target->texture.width;
+        scaleY = (float)GetScreenHeight()/target->texture.height;
+        drawScale = min(scaleX, scaleY);
+        SetMouseScale(1.0f/scaleX, 1.0f/scaleY);
 
         BeginDrawing();
             ClearBackground(BLACK);
@@ -68,9 +73,9 @@ int main(void) {
                 target->texture,
                 (Rectangle){ 0.0f, 0.0f, (float)target->texture.width, (float)-target->texture.height },
                 (Rectangle) {
-                    (GetScreenWidth() - ((float)target->texture.width * scale)) * 0.5,
-                    (GetScreenHeight() - ((float)target->texture.height * scale)) * 0.5,
-                    (float)target->texture.width * scale, (float)target->texture.height * scale
+                    (GetScreenWidth() - ((float)target->texture.width * drawScale)) * 0.5,
+                    (GetScreenHeight() - ((float)target->texture.height * drawScale)) * 0.5,
+                    (float)target->texture.width * drawScale, (float)target->texture.height * drawScale
                 },
                 (Vector2){ 0, 0 },
                 0.0f, WHITE
