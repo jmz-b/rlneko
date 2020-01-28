@@ -25,8 +25,8 @@ int main(void) {
     SmoothFollowCameraConfig cameraConfig = { CAMERA_MIN_SPEED, CAMERA_MIN_EFFECT_LENGTH, CAMERA_FRACTION_SPEED };
     TerrainConfig terrainConfig = { GAME_WIDTH, GAME_HEIGHT };
     GameConfig gameConfig = { GAME_WIDTH, GAME_HEIGHT, GAME_FPS };
-    StartScreen start = LoadStartScreen(startConfig);
 
+    StartScreen start = LoadStartScreen(startConfig);
     RenderTexture2D *screenToTargetMap[2] = { &start.target, &game.target };
     Screen currentScreen = STARTSCREEN;
 
