@@ -5,24 +5,12 @@
 StartScreen LoadStartScreen(StartScreenConfig config) {
     RenderTexture2D target = LoadRenderTexture(config.width, config.height);
     Texture2D characterSelectTexture = LoadTexture(config.texturePath);
-    CharacterTexture selectedCharacter = NEKO;
+    CharacterName selectedCharacter = NEKO;
     bool enter = false;
 
     SetTextureFilter(target.texture, FILTER_POINT);  // texture scale filter to use
 
     return (StartScreen){ config, target, characterSelectTexture, selectedCharacter, enter };
-}
-
-const char *GetCharacterTexturePath(StartScreen *start) {
-    switch (start->selectedCharacter) {
-        case NEKO: return "resources/neko.png";
-        case DOG: return "resources/dog.png";
-        case TORA: return "resources/tora.png";
-        case SAKURA: return "resources/sakura.png";
-        case TOMOYO: return "resources/tomoyo.png";
-        case BEASTIE: return "resources/beastie.png";
-        default: return "resources/neko.png";
-    };
 }
 
 void UpdateStartScreen(StartScreen *start) {

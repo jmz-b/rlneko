@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include <raylib.h>
-#include "player.h"
+#include "character.h"
 #include "camera.h"
 #include "terrain.h"
 
@@ -15,13 +15,13 @@ typedef struct {
 typedef struct {
     GameConfig config;
     RenderTexture2D target;
-    Player player;
+    Character player;
     SmoothFollowCamera camera;
     Terrain terrain;
     Vector2 clickPosition;
 } Game;
 
-Game LoadGame(GameConfig gameConfig, PlayerConfig playerConfig, SmoothFollowCameraConfig cameraConfig, TerrainConfig terrainConfig);
+Game LoadGame(GameConfig gameConfig, CharacterConfig playerConfig, SmoothFollowCameraConfig cameraConfig, TerrainConfig terrainConfig);
 void UpdateGame(Game *game);
 void DrawGame(Game *game);
 void UnloadGame(Game *game);

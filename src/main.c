@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include "startscreen.h"
+#include "character.h"
 #include "player.h"
 #include "terrain.h"
 #include "game.h"
@@ -12,7 +13,7 @@ typedef enum { STARTSCREEN, GAME } Screen;
 
 int main(void) {
     Game game;
-    PlayerConfig playerConfig;
+    CharacterConfig playerConfig;
     RenderTexture2D *target;
     float scaleX;
     float scaleY;
@@ -33,11 +34,13 @@ int main(void) {
     Screen currentScreen = STARTSCREEN;
 
     while (!WindowShouldClose()) {
+
+        // select screen
         switch (currentScreen) {
             case STARTSCREEN:
                 UpdateStartScreen(&start);
                 if (start.enter) {
-                    playerConfig = (PlayerConfig){ GetCharacterTexturePath(&start), PLAYER_DROP_BOX, PLAYER_FPS, PLAYER_NUM_FRAMES };
+                    playerConfig = (CharacterConfig){ GetCharacterTexturePath(start.selectedCharacter), PLAYER_DROP_BOX, PLAYER_FPS, PLAYER_NUM_FRAMES };
                     game = LoadGame(gameConfig, playerConfig, cameraConfig, terrainConfig);
                     currentScreen = GAME;
                 }
@@ -47,10 +50,15 @@ int main(void) {
                 break;
         }
 
+        // get current RenderTexture2D target
         target = screenToTargetMap[currentScreen];
+
+        // get scale factors
         scaleX = (float)GetScreenWidth()/target->texture.width;
         scaleY = (float)GetScreenHeight()/target->texture.height;
         drawScale = min(scaleX, scaleY);
+
+        // scale mouse coords
         SetMouseScale(1.0f/scaleX, 1.0f/scaleY);
 
         BeginDrawing();
